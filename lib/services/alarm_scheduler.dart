@@ -29,8 +29,13 @@ class AlarmScheduler {
       if (alarm.active && days[i]) {
         final targetDateTime = nextWeekday(i + 1, alarm.hour, alarm.minute);
         await AndroidAlarmManager.oneShotAt(
-            targetDateTime, scheduleId + i, callback,
-            alarmClock: true, rescheduleOnReboot: true);
+          targetDateTime,
+          scheduleId + i,
+          callback,
+          alarmClock: false,
+          wakeup: true,
+          rescheduleOnReboot: true,
+        );
       }
     }
   }

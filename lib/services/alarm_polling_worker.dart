@@ -26,7 +26,7 @@ class AlarmPollingWorker {
 
     running = true;
     // 60번 반복하여 알람 플래그파일을 확인
-    poller(60).then((alarmId) {
+    poller().then((alarmId) {
       running = false;
       // 알람파일이 발견될경우
       if (alarmId != null && AlarmStatus().alarmId == null) {
@@ -40,15 +40,12 @@ class AlarmPollingWorker {
 
   /// Polling function checking for .alarm files in getApplicationDocumentsDirectory()
   /// every 10th of a for #iterations iterations.
-  Future<String?> poller(int iterations) async {
-    for (int i = 0; i < iterations; i++) {
+  Future<String?> poller() async {
+    while (true) {
       final foundFiles = await findFiles();
-      if (foundFiles.length > 0) return foundFiles[0];
-
-      await Future.delayed(const Duration(milliseconds: 100));
+      if (foundFiles.isNotEmpty) return foundFiles.first;
+      await Future.delayed(const Duration(seconds: 1));
     }
-
-    return null;
   }
 
   Future<List<String>> findFiles() async {

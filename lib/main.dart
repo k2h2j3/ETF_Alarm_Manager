@@ -30,11 +30,13 @@ void main() async {
   // 앱 생명주기 감지
   WidgetsBinding.instance!.addObserver(LifeCycleListener(list));
 
-  runApp(MyApp());
   // AndroidAlarmManager 초기화
   await AndroidAlarmManager.initialize();
   // AlarmPollingWorkder 생성
   AlarmPollingWorker().createPollingWorker();
+
+  runApp(MyApp());
+
 
   final externalPath = await getExternalStorageDirectory();
   if (externalPath == null) {
