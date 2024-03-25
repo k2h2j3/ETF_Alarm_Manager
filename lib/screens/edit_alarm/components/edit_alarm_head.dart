@@ -20,14 +20,18 @@ class EditAlarmHead extends StatelessWidget {
             children: <Widget>[
               Text('Name:'),
               TextField(
+                // 테두리 없앰
                 decoration: InputDecoration(border: InputBorder.none),
+                // 기존 알람 이름 불러오기
                 controller: TextEditingController(text: alarm.name),
                 style: TextStyle(fontSize: 18),
+                // 이름 값이 변경될때마다 갱신
                 onChanged: (newName) => alarm.name = newName,
               )
             ],
           ),
         ),
+        // 알람 활성화 아이콘
         Observer(
           builder: (context) => IconButton(
             icon: alarm.active

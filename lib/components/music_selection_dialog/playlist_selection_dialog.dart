@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_audio_query/flutter_audio_query.dart';
+import 'package:flutter_alarm_plus/stores/music_selection/searchable_selection.dart';
+import 'package:flutter_alarm_plus/stores/observable_alarm/observable_alarm.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
 import 'dialog_base.dart';
-import '../../stores/music_selection/searchable_selection.dart';
-import '../../stores/observable_alarm/observable_alarm.dart';
+//import '../../stores/music_selection/searchable_selection.dart';
+//import '../../stores/observable_alarm/observable_alarm.dart';
 
 class PlaylistSelectionDialog extends StatelessWidget {
   final ObservableAlarm alarm;
-  final List<PlaylistInfo> playlists;
+  final List<PlaylistModel> playlists;
 
-  final SearchableSelectionStore<PlaylistInfo> store;
+  final SearchableSelectionStore<PlaylistModel> store;
 
   PlaylistSelectionDialog(
       {Key? key, required this.alarm, required this.playlists})
       : store = SearchableSelectionStore(
             playlists,
-            alarm.playlistInfo.map((info) => info.id).toList(),
-            (info) => info.id, (info, search) {
+      alarm.playlistInfo.map((info) => info.id.toString()).toList(),
+          (info) => info.id.toString(), (info, search) {
           final filter = RegExp(search, caseSensitive: false);
-          return info.name!.contains(filter);
+          return info.playlist.contains(filter);
         }),
         super(key: key);
 
@@ -45,7 +47,7 @@ class PlaylistSelectionDialog extends StatelessWidget {
 }
 
 class PlaylistList extends StatelessWidget {
-  final SearchableSelectionStore<PlaylistInfo> store;
+  final SearchableSelectionStore<PlaylistModel> store;
 
   const PlaylistList({Key? key, required this.store}) : super(key: key);
 
@@ -60,15 +62,15 @@ class PlaylistList extends StatelessWidget {
   }
 
   Widget widgetForPlaylistId(String id) {
-    final List<PlaylistInfo> playlists = store.availableItems;
+    final List<PlaylistModel> playlists = store.availableItems;
     final playlist = playlists.firstWhere((info) => info.id == id);
 
     return Observer(
       builder: (context) => CheckboxListTile(
         value: store.itemSelected[playlist.id] ?? false,
-        title: Text(playlist.name!),
+        title: Text(playlist.data!),
         onChanged: (newValue) {
-          store.itemSelected[playlist.id] = newValue!;
+          store.itemSelected[playlist.id.toString()] = newValue!;
         },
       ),
     );

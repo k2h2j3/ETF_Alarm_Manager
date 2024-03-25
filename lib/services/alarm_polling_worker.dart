@@ -1,8 +1,9 @@
 import 'dart:async';
 
+import 'package:flutter_alarm_plus/stores/alarm_status/alarm_status.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import '../stores/alarm_status/alarm_status.dart';
+// import '../stores/alarm_status/alarm_status.dart';
 
 class AlarmPollingWorker {
   static AlarmPollingWorker _instance = AlarmPollingWorker._();
@@ -24,9 +25,12 @@ class AlarmPollingWorker {
     }
 
     running = true;
+    // 60번 반복하여 알람 플래그파일을 확인
     poller(60).then((alarmId) {
       running = false;
+      // 알람파일이 발견될경우
       if (alarmId != null && AlarmStatus().alarmId == null) {
+        // 알람 파일 정리
         AlarmStatus().isAlarm = true;
         AlarmStatus().alarmId = int.parse(alarmId);
         cleanUpAlarmFiles();
@@ -48,8 +52,11 @@ class AlarmPollingWorker {
   }
 
   Future<List<String>> findFiles() async {
+    // .alarm 확장자를 가진 파일을 검색
     final extension = ".alarm";
+    // 문서 디렉토리를 가져옴
     final dir = await getApplicationDocumentsDirectory();
+    // .alarm 확장자를 가진 파일만 필터링
     return dir
         .list()
         .map((entry) => entry.path)

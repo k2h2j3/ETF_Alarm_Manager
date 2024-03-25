@@ -1,28 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_audio_query/flutter_audio_query.dart';
+import 'package:flutter_alarm_plus/stores/music_selection/searchable_selection.dart';
+import 'package:flutter_alarm_plus/stores/observable_alarm/observable_alarm.dart';
+import 'package:flutter_alarm_plus/stores/music_selection/searchable_selection.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'dialog_base.dart';
-import '../../stores/music_selection/searchable_selection.dart';
-import '../../stores/observable_alarm/observable_alarm.dart';
+//import '../../stores/music_selection/searchable_selection.dart';
+//import '../../stores/observable_alarm/observable_alarm.dart';
 
-bool songFilter(SongInfo info, String currentSearch) {
+bool songFilter(SongModel info, String currentSearch) {
   final filter = RegExp(currentSearch, caseSensitive: false);
-  return info.title!.contains(filter) || info.displayName!.contains(filter);
+  return info.title.contains(filter) || info.displayName.contains(filter);
 }
 
 class MusicSelectionDialog extends StatelessWidget {
-  final List<SongInfo> titles;
+  final List<SongModel> titles;
   final ObservableAlarm alarm;
 
-  final SearchableSelectionStore<SongInfo> store;
+  final SearchableSelectionStore<SongModel> store;
 
   MusicSelectionDialog({Key? key, required this.titles, required this.alarm})
-      : store = SearchableSelectionStore(
-            titles,
-            alarm.trackInfo.map((info) => info.id).toList(),
-            (info) => info.id,
-            songFilter),
+      : store = SearchableSelectionStore<SongModel>(
+      titles,
+      alarm.trackInfo.map((info) => info.id.toString()).toList(),
+          (info) => (info as SongModel).id.toString(),
+      songFilter),
         super(key: key);
 
   @override
@@ -45,7 +48,7 @@ class MusicSelectionDialog extends StatelessWidget {
 }
 
 class MusicList extends StatelessWidget {
-  final SearchableSelectionStore<SongInfo> store;
+  final SearchableSelectionStore<SongModel> store;
 
   const MusicList({Key? key, required this.store}) : super(key: key);
 
@@ -60,16 +63,16 @@ class MusicList extends StatelessWidget {
   }
 
   Widget widgetForSongId(String id) {
-    final List<SongInfo> titles = store.availableItems;
-    final title = titles.firstWhere((info) => info.id == id);
+    final List<SongModel> titles = store.availableItems;
+    final title = titles.firstWhere((info) => info?.id.toString() == id);
 
     return Observer(
         builder: (context) => CheckboxListTile(
-              value: store.itemSelected[title.id] ?? false,
-              title: Text(title.title ?? title.displayName!),
-              onChanged: (newValue) {
-                store.itemSelected[title.id] = newValue!;
-              },
-            ));
+          value: store.itemSelected[title?.id.toString() ?? ''] ?? false,
+          title: Text(title?.title ?? ''),
+          onChanged: (newValue) {
+            store.itemSelected[title?.id.toString() ?? ''] = newValue!;
+          },
+        ));
   }
 }

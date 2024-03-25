@@ -1,5 +1,6 @@
+import 'package:flutter_alarm_plus/stores/observable_alarm/observable_alarm.dart';
 import 'package:mobx/mobx.dart';
-import '../observable_alarm/observable_alarm.dart';
+// import '../observable_alarm/observable_alarm.dart';
 
 part 'alarm_list.g.dart';
 

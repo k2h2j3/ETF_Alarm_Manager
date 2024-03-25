@@ -254,13 +254,13 @@ mixin _$ObservableAlarm on ObservableAlarmBase, Store {
       Atom(name: 'ObservableAlarmBase.trackInfo', context: context);
 
   @override
-  ObservableList<SongInfo> get trackInfo {
+  ObservableList<SongModel> get trackInfo {
     _$trackInfoAtom.reportRead();
     return super.trackInfo;
   }
 
   @override
-  set trackInfo(ObservableList<SongInfo> value) {
+  set trackInfo(ObservableList<SongModel> value) {
     _$trackInfoAtom.reportWrite(value, super.trackInfo, () {
       super.trackInfo = value;
     });
@@ -270,13 +270,13 @@ mixin _$ObservableAlarm on ObservableAlarmBase, Store {
       Atom(name: 'ObservableAlarmBase.playlistInfo', context: context);
 
   @override
-  ObservableList<PlaylistInfo> get playlistInfo {
+  ObservableList<PlaylistModel> get playlistInfo {
     _$playlistInfoAtom.reportRead();
     return super.playlistInfo;
   }
 
   @override
-  set playlistInfo(ObservableList<PlaylistInfo> value) {
+  set playlistInfo(ObservableList<PlaylistModel> value) {
     _$playlistInfoAtom.reportWrite(value, super.playlistInfo, () {
       super.playlistInfo = value;
     });
@@ -302,7 +302,7 @@ mixin _$ObservableAlarm on ObservableAlarmBase, Store {
       ActionController(name: 'ObservableAlarmBase', context: context);
 
   @override
-  void removeItem(SongInfo info) {
+  void removeItem(SongModel info) {
     final _$actionInfo = _$ObservableAlarmBaseActionController.startAction(
         name: 'ObservableAlarmBase.removeItem');
     try {
@@ -313,7 +313,7 @@ mixin _$ObservableAlarm on ObservableAlarmBase, Store {
   }
 
   @override
-  void removePlaylist(PlaylistInfo info) {
+  void removePlaylist(PlaylistModel info) {
     final _$actionInfo = _$ObservableAlarmBaseActionController.startAction(
         name: 'ObservableAlarmBase.removePlaylist');
     try {

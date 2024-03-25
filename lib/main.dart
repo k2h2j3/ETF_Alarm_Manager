@@ -17,17 +17,23 @@ import 'stores/alarm_status/alarm_status.dart';
 AlarmList list = AlarmList();
 
 void main() async {
+  // 위젯바인딩 초기화
   WidgetsFlutterBinding.ensureInitialized();
+  // 저장된 알람목록 read
   final alarms = await new JsonFileStorage().readList();
   list.setAlarms(alarms);
+  // 각 알람에 대해 트랙과 재생목록 load
   list.alarms.forEach((alarm) {
     alarm.loadTracks();
     alarm.loadPlaylists();
   });
+  // 앱 생명주기 감지
   WidgetsBinding.instance!.addObserver(LifeCycleListener(list));
 
   runApp(MyApp());
+  // AndroidAlarmManager 초기화
   await AndroidAlarmManager.initialize();
+  // AlarmPollingWorkder 생성
   AlarmPollingWorker().createPollingWorker();
 
   final externalPath = await getExternalStorageDirectory();
@@ -49,14 +55,18 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           scaffoldBackgroundColor: Color.fromRGBO(25, 12, 38, 1),
         ),
+        // Observer를 통해 AlarmStatus 관찰
         home: Observer(builder: (context) {
           AlarmStatus status = AlarmStatus();
 
+          // 현재 알람이 울리고 있는 경우
           if (status.isAlarm) {
             final id = status.alarmId;
+            // 해당 알람 ID로 AlarmList에서 알람찾기
             final alarm =
             list.alarms.firstWhereOrNull((alarm) => alarm.id == id)!;
 
+            // MediaHandler를 사용하여 볼륨 조절 및 음악 재생
             MediaHandler mediaHandler = MediaHandler();
 
             mediaHandler.changeVolume(alarm);
@@ -65,6 +75,7 @@ class MyApp extends StatelessWidget {
 
             return AlarmScreen(alarm: alarm, mediaHandler: mediaHandler);
           }
+          // 알람이 울리고있지 않은 경우에는 홈화면 return
           return HomeScreen(alarms: list);
         }));
   }

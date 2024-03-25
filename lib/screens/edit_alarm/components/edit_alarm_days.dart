@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_alarm_plus/stores/observable_alarm/observable_alarm.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import '../../../stores/observable_alarm/observable_alarm.dart';
+// import '../../../stores/observable_alarm/observable_alarm.dart';
 
 class EditAlarmDays extends StatelessWidget {
   final ObservableAlarm alarm;
@@ -15,7 +16,9 @@ class EditAlarmDays extends StatelessWidget {
         children: <Widget>[
           WeekDayToggle(
             text: 'Mo',
+            // 현재 선택 상태
             current: alarm.monday,
+            // 토글 콜백(해당 요일의 선택 상태를 변경하는 역할)
             onToggle: (monday) => alarm.monday = monday,
           ),
           WeekDayToggle(
@@ -55,8 +58,11 @@ class EditAlarmDays extends StatelessWidget {
 }
 
 class WeekDayToggle extends StatelessWidget {
+  // 토글 콜백
   final void Function(bool) onToggle;
+  // 현재 선택 상태
   final bool current;
+  // 요일 텍스트
   final String text;
 
   const WeekDayToggle({Key? key, required this.onToggle, required this.current, required this.text})
@@ -68,6 +74,7 @@ class WeekDayToggle extends StatelessWidget {
     final textColor = this.current ? Colors.white : Colors.deepPurple;
     final blobColor = this.current ? Colors.deepPurple : Colors.white;
 
+    // 토글 버튼 모양 터치
     return GestureDetector(
       child: SizedBox.fromSize(
         size: Size.fromRadius(size),

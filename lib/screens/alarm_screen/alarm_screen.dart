@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_alarm_plus/components/default_container/default_container.dart';
+import 'package:flutter_alarm_plus/services/media_handler.dart';
+import 'package:flutter_alarm_plus/stores/alarm_status/alarm_status.dart';
+import 'package:flutter_alarm_plus/stores/observable_alarm/observable_alarm.dart';
 import 'package:intl/intl.dart';
-import '../../components/default_container/default_container.dart';
-import '../../services/media_handler.dart';
-import '../../stores/alarm_status/alarm_status.dart';
-import '../../stores/observable_alarm/observable_alarm.dart';
+//import '../../components/default_container/default_container.dart';
+//import '../../services/media_handler.dart';
+//import '../../stores/alarm_status/alarm_status.dart';
+//import '../../stores/observable_alarm/observable_alarm.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -42,6 +46,7 @@ class AlarmScreen extends StatelessWidget {
                     color: Colors.deepOrange,
                     size: 32,
                   ),
+                  // 현재 시간
                   Text(
                     format.format(now),
                     style: TextStyle(
@@ -49,6 +54,7 @@ class AlarmScreen extends StatelessWidget {
                         fontWeight: FontWeight.w900,
                         color: Colors.white),
                   ),
+                  // 알람 이름
                   Text(
                     alarm.name,
                     style: TextStyle(color: Colors.white, fontSize: 24),
@@ -71,11 +77,15 @@ class AlarmScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 26),
               )),
               onSubmit: () async {
+                // 알람 중지
                 mediaHandler.stopAlarm();
+                // 화면 깨우기 기능 비활성화
                 Wakelock.disable();
 
+                // 알람 상태 업데이트
                 AlarmStatus().isAlarm = false;
                 AlarmStatus().alarmId = null;
+                // 알람 이전화면으로 돌아감
                 SystemNavigator.pop();
               },
               innerColor: Colors.deepPurple,

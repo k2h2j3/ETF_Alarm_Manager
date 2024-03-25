@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_alarm_plus/stores/observable_alarm/observable_alarm.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import '../../../stores/observable_alarm/observable_alarm.dart';
+// import '../../../stores/observable_alarm/observable_alarm.dart';
 
 class EditAlarmSlider extends StatelessWidget {
   final ObservableAlarm alarm;

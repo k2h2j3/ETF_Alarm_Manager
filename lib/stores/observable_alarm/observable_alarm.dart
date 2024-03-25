@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_audio_query/flutter_audio_query.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobx/mobx.dart';
 
@@ -121,37 +121,37 @@ abstract class ObservableAlarmBase with Store {
 
   @observable
   @JsonKey(ignore: true)
-  ObservableList<SongInfo> trackInfo = ObservableList();
+  ObservableList<SongModel> trackInfo = ObservableList();
 
   @observable
   @JsonKey(ignore: true)
-  ObservableList<PlaylistInfo> playlistInfo = ObservableList();
+  ObservableList<PlaylistModel> playlistInfo = ObservableList();
 
   ObservableAlarmBase(
       {required this.id,
-      required this.name,
-      required this.hour,
-      required this.minute,
-      required this.monday,
-      required this.tuesday,
-      required this.wednesday,
-      required this.thursday,
-      required this.friday,
-      required this.saturday,
-      required this.sunday,
-      required this.volume,
-      required this.active,
-      required this.musicIds,
-      required this.musicPaths});
+        required this.name,
+        required this.hour,
+        required this.minute,
+        required this.monday,
+        required this.tuesday,
+        required this.wednesday,
+        required this.thursday,
+        required this.friday,
+        required this.saturday,
+        required this.sunday,
+        required this.volume,
+        required this.active,
+        required this.musicIds,
+        required this.musicPaths});
 
   @action
-  void removeItem(SongInfo info) {
+  void removeItem(SongModel info) {
     trackInfo.remove(info);
     trackInfo = trackInfo;
   }
 
   @action
-  void removePlaylist(PlaylistInfo info) {
+  void removePlaylist(PlaylistModel info) {
     playlistInfo.remove(info);
     playlistInfo = playlistInfo;
   }
@@ -171,13 +171,15 @@ abstract class ObservableAlarmBase with Store {
       return;
     }
 
-    // Workaround for https://github.com/sc4v3ng3r/flutter_audio_query/issues/16
-    if (musicIds.length == 1) {
-      musicIds.add("");
-    }
+    final songs = await OnAudioQuery().querySongs(
+      sortType: SongSortType.TITLE,
+      orderType: OrderType.ASC_OR_SMALLER,
+      uriType: UriType.EXTERNAL,
+      ignoreCase: true,
+    );
 
-    final songs = await FlutterAudioQuery().getSongsById(ids: musicIds);
-    trackInfo = ObservableList.of(songs);
+    final filteredSongs = songs.where((song) => musicIds.contains(song.id.toString())).toList();
+    trackInfo = ObservableList.of(filteredSongs);
   }
 
   @action
@@ -187,22 +189,24 @@ abstract class ObservableAlarmBase with Store {
       return;
     }
 
-    final playlists = await FlutterAudioQuery().getPlaylists() ?? [];
+    final playlists = await OnAudioQuery().queryPlaylists(
+      sortType: PlaylistSortType.PLAYLIST,
+      orderType: OrderType.ASC_OR_SMALLER,
+      uriType: UriType.EXTERNAL,
+      ignoreCase: true,
+    );
 
-    final selectedPlaylists = playlists
-        .whereType<PlaylistInfo>()
-        .where((info) => playlistIds.contains(info.id));
-
-    playlistInfo = ObservableList.of(selectedPlaylists);
+    final filteredPlaylists = playlists.where((playlist) => playlistIds.contains(playlist.id.toString())).toList();
+    playlistInfo = ObservableList.of(filteredPlaylists);
   }
 
   updateMusicPaths() {
-    musicIds = trackInfo.map((SongInfo info) => info.id).toList();
+    musicIds = trackInfo.map((SongModel info) => info.id.toString()).toList();
     musicPaths = trackInfo
-        .map((SongInfo info) => info.filePath)
+        .map((SongModel info) => info.data)
         .whereType<String>()
         .toList();
-    playlistIds = playlistInfo.map((info) => info.id).toList();
+    playlistIds = playlistInfo.map((info) => info.id.toString()).toList();
   }
 
   List<bool> get days {
