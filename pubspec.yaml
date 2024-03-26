@@ -47,6 +47,7 @@ dependencies:
   wakelock: ^0.6.2
   collection: ^1.15.0-nullsafety.4
   permission_handler: ^11.3.0
+  workmanager: ^0.5.2
 
 dev_dependencies:
   build_runner: ^2.1.2
