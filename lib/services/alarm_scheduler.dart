@@ -32,7 +32,7 @@ class AlarmScheduler {
           targetDateTime,
           scheduleId + i,
           callback,
-          alarmClock: false,
+          alarmClock: true,
           wakeup: true,
           rescheduleOnReboot: true,
         );
