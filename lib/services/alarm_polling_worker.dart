@@ -25,13 +25,14 @@ class AlarmPollingWorker {
     }
 
     running = true;
-    // 60번 반복하여 알람 플래그파일을 확인
     poller().then((alarmId) {
       running = false;
       // 알람파일이 발견될경우
       if (alarmId != null && AlarmStatus().alarmId == null) {
         // 알람 파일 정리
+        print('before mode : ${AlarmStatus().isAlarm}');
         AlarmStatus().isAlarm = true;
+        print('success convert true mode : ${AlarmStatus().isAlarm}');
         AlarmStatus().alarmId = int.parse(alarmId);
         cleanUpAlarmFiles();
       }
@@ -43,17 +44,16 @@ class AlarmPollingWorker {
   Future<String?> poller() async {
     while (true) {
       final foundFiles = await findFiles();
-      if (foundFiles.isNotEmpty) return foundFiles.first;
-      await Future.delayed(const Duration(seconds: 1));
+      if (foundFiles.isNotEmpty) {
+        return foundFiles.first;
+      }
+      await Future.delayed(const Duration(milliseconds: 500));
     }
   }
 
   Future<List<String>> findFiles() async {
-    // .alarm 확장자를 가진 파일을 검색
     final extension = ".alarm";
-    // 문서 디렉토리를 가져옴
     final dir = await getApplicationDocumentsDirectory();
-    // .alarm 확장자를 가진 파일만 필터링
     return dir
         .list()
         .map((entry) => entry.path)

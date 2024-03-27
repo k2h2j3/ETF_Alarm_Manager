@@ -15,6 +15,7 @@ class JsonFileStorage {
   Future<void> writeList(List<ObservableAlarm> alarms) async {
     await _ensureFileSet();
     _file!.writeAsString(jsonEncode(alarms));
+    print('writeList completed');
   }
 
   Future<List<ObservableAlarm>> readList() async {

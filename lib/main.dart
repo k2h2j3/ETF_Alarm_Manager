@@ -28,13 +28,16 @@ void main() async {
   // 저장된 알람목록 read
   final alarms = await new JsonFileStorage().readList();
   list.setAlarms(alarms);
+
   // 각 알람에 대해 트랙과 재생목록 load
   list.alarms.forEach((alarm) {
     alarm.loadTracks();
     alarm.loadPlaylists();
   });
+
   // 앱 생명주기 감지
   WidgetsBinding.instance!.addObserver(LifeCycleListener(list));
+
   // 앱 실행
   runApp(MyApp());
 
