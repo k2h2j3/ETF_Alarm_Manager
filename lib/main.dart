@@ -3,6 +3,7 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:wakelock/wakelock.dart';
 
 import 'screens/alarm_screen/alarm_screen.dart';
@@ -17,8 +18,13 @@ import 'stores/alarm_status/alarm_status.dart';
 AlarmList list = AlarmList();
 
 void main() async {
-  // 위젯바인딩 초기화
+  // AndroidAlarmManager 초기화
   WidgetsFlutterBinding.ensureInitialized();
+  await AndroidAlarmManager.initialize();
+
+  // 권한 요청
+  await requestPermissions();
+
   // 저장된 알람목록 read
   final alarms = await new JsonFileStorage().readList();
   list.setAlarms(alarms);
@@ -29,14 +35,11 @@ void main() async {
   });
   // 앱 생명주기 감지
   WidgetsBinding.instance!.addObserver(LifeCycleListener(list));
-
-  // AndroidAlarmManager 초기화
-  await AndroidAlarmManager.initialize();
-  // AlarmPollingWorkder 생성
-  AlarmPollingWorker().createPollingWorker();
-
+  // 앱 실행
   runApp(MyApp());
 
+  // AlarmPollingWorkder 생성
+  AlarmPollingWorker().createPollingWorker();
 
   final externalPath = await getExternalStorageDirectory();
   if (externalPath == null) {
@@ -48,10 +51,29 @@ void main() async {
   }
 }
 
+Future<void> requestPermissions() async {
+  // 알림 권한 요청
+  final notificationStatus = await Permission.notification.request();
+  if (notificationStatus != PermissionStatus.granted) {
+    // 알림 권한 요청이 거부된 경우 처리
+    print('Notification permission denied!');
+    // exit(0);
+  }
+
+  // 배터리 최적화 예외 권한 요청
+  final batteryStatus = await Permission.ignoreBatteryOptimizations.request();
+  if (batteryStatus != PermissionStatus.granted) {
+    // 배터리 최적화 예외 권한 요청이 거부된 경우 처리
+    print('Battery optimization exception permission denied!');
+    // exit(0);
+  }
+}
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
           primarySwatch: Colors.blue,
@@ -68,12 +90,14 @@ class MyApp extends StatelessWidget {
             final alarm =
             list.alarms.firstWhereOrNull((alarm) => alarm.id == id)!;
 
-            // MediaHandler를 사용하여 볼륨 조절 및 음악 재생
             MediaHandler mediaHandler = MediaHandler();
+            // MediaHandler를 사용하여 볼륨 조절 및 음악 재생
+            if (alarm.musicIds != null) {
 
-            mediaHandler.changeVolume(alarm);
-            mediaHandler.playMusic(alarm);
-            Wakelock.enable();
+              mediaHandler.changeVolume(alarm);
+              mediaHandler.playMusic(alarm);
+              Wakelock.enable();
+            }
 
             return AlarmScreen(alarm: alarm, mediaHandler: mediaHandler);
           }
