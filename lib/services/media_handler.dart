@@ -76,28 +76,10 @@ class MediaHandler {
 
   // 주어진 경로의 음악 파일을 재생
   playMusicFromPath(String path, alarm) async {
-    bool subscribed = false;
     _currentPlayer = AudioPlayer();
-
-    late StreamSubscription subscription;
-    subscription = _currentPlayer.onDurationChanged.listen((duration) {
-      final seconds = duration.inSeconds;
-      // 음악 파일의 재생 시간이 30초 미만인경우 반복 재생
-      if (seconds < 30) {
-        _currentPlayer.setReleaseMode(ReleaseMode.loop);
-        subscription.cancel();
-      } else {
-        if (subscribed) return;
-        _currentPlayer.onPlayerComplete.listen((_) async {
-          playMusic(alarm);
-          subscription.cancel();
-        });
-        subscribed = true;
-      }
-    });
-
+    _currentPlayer.setReleaseMode(ReleaseMode.loop);
     final fixedPath = File(path).absolute.path;
-    await _currentPlayer.play(UrlSource(fixedPath), volume: 1.0);
+    await _currentPlayer.play(UrlSource(fixedPath), volume: 0.1);
   }
 
   // 알람에 설정된 음악을 무작위로 선택하여 재생
