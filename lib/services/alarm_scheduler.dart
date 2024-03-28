@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+import 'package:flutter_alarm_plus/main.dart';
 import 'package:flutter_alarm_plus/stores/observable_alarm/observable_alarm.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:path_provider/path_provider.dart';
 import 'file_proxy.dart';
 // import '../stores/observable_alarm/observable_alarm.dart';
@@ -91,5 +93,27 @@ class AlarmScheduler {
     print('Creating a new alarm flag for ID $id');
     final dir = await getApplicationDocumentsDirectory();
     JsonFileStorage.toFile(File(dir.path + "/$id.alarm")).writeList([]);
+
+    // 알람 시간에 알림 표시
+    await showAlarmNotification(id);
+  }
+
+  static Future<void> showAlarmNotification(int alarmId) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'alarm_notification_channel',
+      'Alarm Notifications',
+      importance: Importance.max,
+      priority: Priority.high,
+      fullScreenIntent: true,
+    );
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      alarmId,
+      'Alarm',
+      'Wake up!',
+      platformChannelSpecifics,
+      payload: alarmId.toString(),
+    );
   }
 }

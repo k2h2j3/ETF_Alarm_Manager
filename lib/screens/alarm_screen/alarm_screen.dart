@@ -5,10 +5,6 @@ import 'package:flutter_alarm_plus/services/media_handler.dart';
 import 'package:flutter_alarm_plus/stores/alarm_status/alarm_status.dart';
 import 'package:flutter_alarm_plus/stores/observable_alarm/observable_alarm.dart';
 import 'package:intl/intl.dart';
-//import '../../components/default_container/default_container.dart';
-//import '../../services/media_handler.dart';
-//import '../../stores/alarm_status/alarm_status.dart';
-//import '../../stores/observable_alarm/observable_alarm.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -24,75 +20,72 @@ class AlarmScreen extends StatelessWidget {
     final now = DateTime.now();
     final format = DateFormat('Hm');
 
-    return DefaultContainer(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          Center(
-            child: Container(
-              width: 325,
-              height: 325,
-              decoration: ShapeDecoration(
-                  shape: CircleBorder(
-                      side: BorderSide(
-                          color: Colors.deepOrange,
-                          style: BorderStyle.solid,
-                          width: 4))),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Icon(
-                    Icons.alarm,
-                    color: Colors.deepOrange,
-                    size: 32,
-                  ),
-                  // 현재 시간
-                  Text(
-                    format.format(now),
-                    style: TextStyle(
-                        fontSize: 52,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white),
-                  ),
-                  // 알람 이름
-                  Text(
-                    alarm.name,
-                    style: TextStyle(color: Colors.white, fontSize: 24),
-                  ),
-                ],
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: DefaultContainer(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Center(
+              child: Container(
+                width: 325,
+                height: 325,
+                decoration: ShapeDecoration(
+                    shape: CircleBorder(
+                        side: BorderSide(
+                            color: Colors.deepOrange,
+                            style: BorderStyle.solid,
+                            width: 4))),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Icon(
+                      Icons.alarm,
+                      color: Colors.deepOrange,
+                      size: 32,
+                    ),
+                    Text(
+                      format.format(now),
+                      style: TextStyle(
+                          fontSize: 52,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white),
+                    ),
+                    Text(
+                      alarm.name,
+                      style: TextStyle(color: Colors.white, fontSize: 24),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(50),
-            child: SlideAction(
-              height: 80,
-              sliderButtonIcon: Icon(
-                Icons.chevron_right,
-                size: 36,
-              ),
-              child: Center(
-                  child: Text(
-                'Turn off alarm!',
-                style: TextStyle(fontSize: 26),
-              )),
-              onSubmit: () async {
-                // 알람 중지
-                mediaHandler.stopAlarm();
-                // 화면 깨우기 기능 비활성화
-                Wakelock.disable();
+            ClipRRect(
+              borderRadius: BorderRadius.circular(50),
+              child: SlideAction(
+                height: 80,
+                sliderButtonIcon: Icon(
+                  Icons.chevron_right,
+                  size: 36,
+                ),
+                child: Center(
+                    child: Text(
+                      'Turn off alarm!',
+                      style: TextStyle(fontSize: 26),
+                    )),
+                onSubmit: () async {
+                  mediaHandler.stopAlarm();
+                  Wakelock.disable();
 
-                // 알람 상태 업데이트
-                AlarmStatus().isAlarm = false;
-                AlarmStatus().alarmId = null;
-                // 알람 이전화면으로 돌아감
-                SystemNavigator.pop();
-              },
-              innerColor: Colors.deepPurple,
-              outerColor: Colors.deepOrangeAccent,
-            ),
-          )
-        ],
+                  AlarmStatus().isAlarm = false;
+                  AlarmStatus().alarmId = null;
+                  SystemNavigator.pop();
+                },
+                innerColor: Colors.deepPurple,
+                outerColor: Colors.deepOrangeAccent,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

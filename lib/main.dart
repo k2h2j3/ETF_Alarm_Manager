@@ -1,11 +1,12 @@
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wakelock/wakelock.dart';
-
 import 'screens/alarm_screen/alarm_screen.dart';
 import 'screens/home_screen/home_screen.dart';
 import 'services/alarm_polling_worker.dart';
@@ -16,6 +17,8 @@ import 'stores/alarm_list/alarm_list.dart';
 import 'stores/alarm_status/alarm_status.dart';
 
 AlarmList list = AlarmList();
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 void main() async {
   // AndroidAlarmManager 초기화
@@ -37,6 +40,28 @@ void main() async {
 
   // 앱 생명주기 감지
   WidgetsBinding.instance!.addObserver(LifeCycleListener(list));
+
+  // flutter_local_notifications 초기화
+  const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('clockicon');
+  final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  // 알림 탭 이벤트 처리
+  final NotificationAppLaunchDetails? notificationAppLaunchDetails = await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+  if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
+    final notificationResponse = notificationAppLaunchDetails!.notificationResponse;
+    if (notificationResponse != null) {
+      final payload = notificationResponse.payload;
+      if (payload != null) {
+        final alarmId = int.parse(payload);
+        final alarm = list.alarms.firstWhereOrNull((alarm) => alarm.id == alarmId);
+        if (alarm != null) {
+          AlarmStatus().isAlarm = true;
+          AlarmStatus().alarmId = alarmId;
+        }
+      }
+    }
+  }
 
   // 앱 실행
   runApp(MyApp());
@@ -82,29 +107,20 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           scaffoldBackgroundColor: Color.fromRGBO(25, 12, 38, 1),
         ),
-        // Observer를 통해 AlarmStatus 관찰
         home: Observer(builder: (context) {
           AlarmStatus status = AlarmStatus();
 
-          // 현재 알람이 울리고 있는 경우
           if (status.isAlarm) {
             final id = status.alarmId;
-            // 해당 알람 ID로 AlarmList에서 알람찾기
-            final alarm =
-            list.alarms.firstWhereOrNull((alarm) => alarm.id == id)!;
+            final alarm = list.alarms.firstWhereOrNull((alarm) => alarm.id == id)!;
 
             MediaHandler mediaHandler = MediaHandler();
-            // MediaHandler를 사용하여 볼륨 조절 및 음악 재생
-            if (alarm.musicIds != null) {
-
-              mediaHandler.changeVolume(alarm);
-              mediaHandler.playMusic(alarm);
-              Wakelock.enable();
-            }
+            mediaHandler.changeVolume(alarm);
+            mediaHandler.playMusic(alarm);
+            Wakelock.enable();
 
             return AlarmScreen(alarm: alarm, mediaHandler: mediaHandler);
           }
-          // 알람이 울리고있지 않은 경우에는 홈화면 return
           return HomeScreen(alarms: list);
         }));
   }
