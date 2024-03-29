@@ -101,31 +101,32 @@ class AlarmScheduler {
     await showAlarmNotification(id);
   }
 
+
+
   static Future<void> showAlarmNotification(int alarmId) async {
-    final vibrationPattern = Int64List.fromList([0, 1000, 500, 1000, 500, 1000,]);
-    final androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'alarm_notification_channel',
-      'Alarm Notifications',
-      importance: Importance.max,
-      priority: Priority.high,
-      fullScreenIntent: true,
-      vibrationPattern: vibrationPattern,
-    );
-    final platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
-
-    await flutterLocalNotificationsPlugin.show(
-      alarmId,
-      'Alarm',
-      'Wake up!',
-      platformChannelSpecifics,
-      payload: alarmId.toString(),
-    );
-
+    final alarms = await new JsonFileStorage().readList();
+    list.setAlarms(alarms);
     final alarm = list.alarms.firstWhereOrNull((alarm) => alarm.id == alarmId);
     if (alarm != null) {
-      MediaHandler mediaHandler = MediaHandler();
-      await mediaHandler.changeVolume(alarm);
-      await mediaHandler.playMusic(alarm);
+      final vibrationPattern = Int64List.fromList([0, 1000, 500, 1000]);
+      final androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'alarm_notification_channel',
+        'Alarm Notifications',
+        importance: Importance.max,
+        priority: Priority.high,
+        fullScreenIntent: true,
+        ongoing: true,
+        vibrationPattern: vibrationPattern,
+      );
+      final platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+
+      await flutterLocalNotificationsPlugin.show(
+        alarmId,
+        'Alarm',
+        alarm.name, // ObservableAlarm의 name 속성 사용
+        platformChannelSpecifics,
+        payload: alarmId.toString(),
+      );
     }
   }
 }

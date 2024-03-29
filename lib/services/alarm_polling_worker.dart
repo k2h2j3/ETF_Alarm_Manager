@@ -30,9 +30,7 @@ class AlarmPollingWorker {
       // 알람파일이 발견될경우
       if (alarmId != null && AlarmStatus().alarmId == null) {
         // 알람 파일 정리
-        print('before mode : ${AlarmStatus().isAlarm}');
         AlarmStatus().isAlarm = true;
-        print('success convert true mode : ${AlarmStatus().isAlarm}');
         AlarmStatus().alarmId = int.parse(alarmId);
         cleanUpAlarmFiles();
       }
