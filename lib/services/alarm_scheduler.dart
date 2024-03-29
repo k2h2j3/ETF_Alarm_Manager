@@ -1,7 +1,10 @@
 import 'dart:io';
-
+import 'dart:typed_data';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_alarm_plus/main.dart';
+import 'package:flutter_alarm_plus/services/media_handler.dart';
 import 'package:flutter_alarm_plus/stores/observable_alarm/observable_alarm.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:path_provider/path_provider.dart';
@@ -99,14 +102,16 @@ class AlarmScheduler {
   }
 
   static Future<void> showAlarmNotification(int alarmId) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    final vibrationPattern = Int64List.fromList([0, 1000, 500, 1000, 500, 1000,]);
+    final androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'alarm_notification_channel',
       'Alarm Notifications',
       importance: Importance.max,
       priority: Priority.high,
       fullScreenIntent: true,
+      vibrationPattern: vibrationPattern,
     );
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+    final platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.show(
       alarmId,
@@ -115,5 +120,12 @@ class AlarmScheduler {
       platformChannelSpecifics,
       payload: alarmId.toString(),
     );
+
+    final alarm = list.alarms.firstWhereOrNull((alarm) => alarm.id == alarmId);
+    if (alarm != null) {
+      MediaHandler mediaHandler = MediaHandler();
+      await mediaHandler.changeVolume(alarm);
+      await mediaHandler.playMusic(alarm);
+    }
   }
 }
