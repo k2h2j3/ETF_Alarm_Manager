@@ -3,31 +3,29 @@ import 'package:flutter_alarm_plus/components/default_container/default_containe
 import 'package:flutter_alarm_plus/services/alarm_list_manager.dart';
 import 'package:flutter_alarm_plus/services/alarm_scheduler.dart';
 import 'package:flutter_alarm_plus/stores/observable_alarm/observable_alarm.dart';
-// import '../../components/default_container/default_container.dart';
 import 'components/edit_alarm_days.dart';
 import 'components/edit_alarm_head.dart';
 import 'components/edit_alarm_music.dart';
 import 'components/edit_alarm_slider.dart';
 import 'components/edit_alarm_time.dart';
-// import '../../services/alarm_list_manager.dart';
-// import '../../services/alarm_scheduler.dart';
-// import '../../stores/observable_alarm/observable_alarm.dart';
 
 class EditAlarm extends StatelessWidget {
   final ObservableAlarm alarm;
   final AlarmListManager manager;
+  final int alarmId;
 
-  EditAlarm({required this.alarm, required this.manager});
+  EditAlarm({required this.alarm, required this.manager, required this.alarmId});
 
   @override
   Widget build(BuildContext context) {
-    // 화면이 종료될때 동작을 정의
     return WillPopScope(
       onWillPop: () async {
-        // 편집된 알람 설정 정의
-        await manager.saveAlarm(alarm);
-        // 알람 스케줄러 호출 및 알람 예약
-        await AlarmScheduler().scheduleAlarm(alarm);
+        // 뒤로 가기 버튼을 눌렀을 때 실행되는 코드
+        // 해당 알람이 새로 생성된 알람인 경우 (id가 null인 경우)
+        if (alarm.id == alarmId) {
+          // 알람 목록에서 해당 알람을 제거
+          manager.removeAlarm(alarm);
+        }
         return true;
       },
       child: DefaultContainer(
@@ -57,7 +55,20 @@ class EditAlarm extends StatelessWidget {
                     EditAlarmMusic(alarm: this.alarm),
                     Divider(),
                     // 알람 볼륨
-                    EditAlarmSlider(alarm: this.alarm)
+                    EditAlarmSlider(alarm: this.alarm),
+                    SizedBox(height: 20),
+                    // 저장 버튼 추가
+                    ElevatedButton(
+                      onPressed: () async {
+                        // 편집된 알람 설정 정의
+                        await manager.saveAlarm(alarm);
+                        // 알람 스케줄러 호출 및 알람 예약
+                        await AlarmScheduler().scheduleAlarm(alarm);
+                        // 화면 종료
+                        Navigator.pop(context);
+                      },
+                      child: Text('Save'),
+                    ),
                   ],
                 ),
               ),

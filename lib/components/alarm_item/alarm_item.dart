@@ -20,7 +20,7 @@ class AlarmItem extends StatelessWidget {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  EditAlarm(alarm: this.alarm, manager: manager))),
+                  EditAlarm(alarm: this.alarm, manager: manager, alarmId: alarm.id,))),
       child: Observer(
         builder: (context) => Card(
           shape:

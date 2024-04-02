@@ -23,4 +23,11 @@ class AlarmListManager {
     // 업데이트된 알람을 파일에 저장
     await _storage.writeList(_alarms.alarms);
   }
+
+  removeAlarm(ObservableAlarm alarm) async {
+    // 알람목록에서 해당 알람을 제거
+    _alarms.alarms.removeWhere((findAlarm) => alarm.id == findAlarm.id);
+    // 파일에서도 해당 알람을 제거
+    await _storage.writeList(_alarms.alarms);
+  }
 }

@@ -79,6 +79,7 @@ class HomeScreen extends StatelessWidget {
                   builder: (context) => EditAlarm(
                     alarm: newAlarm,
                     manager: _manager,
+                    alarmId: newAlarm.id,
                   ),
                 ),
               );
