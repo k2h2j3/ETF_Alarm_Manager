@@ -31,31 +31,23 @@ class EditAlarm extends StatelessWidget {
       child: DefaultContainer(
         child: SingleChildScrollView(
           child: Column(children: [
-            Text(
-              'Alarm',
-              style: TextStyle(color: Colors.white, fontSize: 28),
-            ),
             Card(
+              color: Colors.grey,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15)),
               child: Padding(
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: <Widget>[
-                    // 알람 헤더(제목 및 알람 활성화)
-                    EditAlarmHead(alarm: this.alarm),
-                    Divider(),
-                    // 알람 시간
                     EditAlarmTime(alarm: this.alarm),
                     Divider(),
                     // 알람 반복 요일
                     EditAlarmDays(alarm: this.alarm),
                     Divider(),
+                    EditAlarmHead(alarm: this.alarm),
+                    Divider(),
                     // 알람 음악
                     EditAlarmMusic(alarm: this.alarm),
-                    Divider(),
-                    // 알람 볼륨
-                    EditAlarmSlider(alarm: this.alarm),
                     SizedBox(height: 20),
                     // 저장 버튼 추가
                     ElevatedButton(

@@ -15,39 +15,39 @@ class EditAlarmDays extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           WeekDayToggle(
-            text: 'Mo',
+            text: '월',
             // 현재 선택 상태
             current: alarm.monday,
             // 토글 콜백(해당 요일의 선택 상태를 변경하는 역할)
             onToggle: (monday) => alarm.monday = monday,
           ),
           WeekDayToggle(
-            text: 'Tu',
+            text: '화',
             current: alarm.tuesday,
             onToggle: (tuesday) => alarm.tuesday = tuesday,
           ),
           WeekDayToggle(
-            text: 'We',
+            text: '수',
             current: alarm.wednesday,
             onToggle: (wednesday) => alarm.wednesday = wednesday,
           ),
           WeekDayToggle(
-            text: 'Th',
+            text: '목',
             current: alarm.thursday,
             onToggle: (thursday) => alarm.thursday = thursday,
           ),
           WeekDayToggle(
-            text: 'Fr',
+            text: '금',
             current: alarm.friday,
             onToggle: (friday) => alarm.friday = friday,
           ),
           WeekDayToggle(
-            text: 'Sa',
+            text: '토',
             current: alarm.saturday,
             onToggle: (saturday) => alarm.saturday = saturday,
           ),
           WeekDayToggle(
-            text: 'Su',
+            text: '일',
             current: alarm.sunday,
             onToggle: (sunday) => alarm.sunday = sunday,
           ),
@@ -70,9 +70,9 @@ class WeekDayToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const size = 20.0;
-    final textColor = this.current ? Colors.white : Colors.deepPurple;
-    final blobColor = this.current ? Colors.deepPurple : Colors.white;
+    const size = 18.0;
+    final textColor = this.current ? Colors.white : Colors.white;
+    final blobColor = this.current ? Colors.green : Colors.grey;
 
     // 토글 버튼 모양 터치
     return GestureDetector(

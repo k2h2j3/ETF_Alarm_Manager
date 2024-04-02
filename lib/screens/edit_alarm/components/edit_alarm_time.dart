@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
@@ -11,32 +12,43 @@ class EditAlarmTime extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      // 알람시간 터치하는 위젯
-      child: GestureDetector(
-        child: Observer(builder: (context) {
-          // 시,분 형식화. 시간과 분을 두 자리로 표시 하고 빈 부분을 0으로 채움.
-          final hours = alarm.hour.toString().padLeft(2, '0');
-          final minutes = alarm.minute.toString().padLeft(2, '0');
-          return Text(
-            '$hours:$minutes',
-            style: TextStyle(fontSize: 48),
-          );
-        }),
-        //시간 선택
-        onTap: () async {
-          final time = await showTimePicker(
-            context: context,
-            initialTime: TimeOfDay(hour: alarm.hour, minute: alarm.minute),
-          );
-
-          // 시간이 선택되었을 경우
-          if (time == null) {
-            return;
-          }
-          // 그 시간으로 업데이트
-          alarm.hour = time.hour;
-          alarm.minute = time.minute;
-        },
+      child: Container(
+        height: 216,
+        padding: EdgeInsets.only(top: 6.0),
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        color: Colors.grey, // 배경색을 검은색으로 변경
+        child: SafeArea(
+          top: false,
+          child: Observer(
+            builder: (context) => CupertinoTheme(
+              data: CupertinoThemeData(
+                textTheme: CupertinoTextThemeData(
+                  dateTimePickerTextStyle: TextStyle(
+                    color: Colors.white, // 글자색을 하얀색으로 변경
+                    fontSize: 22,
+                  ),
+                ),
+              ),
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.time,
+                initialDateTime: DateTime(
+                  DateTime.now().year,
+                  DateTime.now().month,
+                  DateTime.now().day,
+                  alarm.hour,
+                  alarm.minute,
+                ),
+                onDateTimeChanged: (DateTime newDateTime) {
+                  alarm.hour = newDateTime.hour;
+                  alarm.minute = newDateTime.minute;
+                },
+                backgroundColor: Colors.grey, // 데이트 피커 배경색을 검은색으로 변경
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

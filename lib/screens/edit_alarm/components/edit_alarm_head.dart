@@ -18,7 +18,7 @@ class EditAlarmHead extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text('Name:'),
+              Text('알림 이름'),
               TextField(
                 // 테두리 없앰
                 decoration: InputDecoration(border: InputBorder.none),

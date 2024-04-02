@@ -37,6 +37,7 @@ class DialogBase extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.clear),
                   onPressed: () {
+                    Navigator.pop(context);
                     controller.clear();
                   },
                 )

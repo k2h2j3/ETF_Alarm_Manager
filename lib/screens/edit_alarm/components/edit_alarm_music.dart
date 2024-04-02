@@ -39,20 +39,6 @@ class EditAlarmMusic extends StatelessWidget {
             MusicSelectionDialog(alarm: alarm, titles: songs));
   }
 
-  // 재생 목록 선택 다이얼로그를 열기위한 함수
-  void openPlaylistSelectionDialog(context) async {
-    await requestPermission();
-    // 기기에 저장된 재생목록을 가져옴
-    final audioQuery = OnAudioQuery();
-    final playlists = await audioQuery.queryPlaylists();
-
-    showDialog(
-      context: context,
-      builder: (context) =>
-          PlaylistSelectionDialog(alarm: alarm, playlists: playlists!),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -65,31 +51,15 @@ class EditAlarmMusic extends StatelessWidget {
               style: TextStyle(fontSize: 20),
             ),
             // 음악 추가 버튼
-            PopupMenuButton<SelectionMode>(
+            IconButton(
               icon: Icon(
                 Icons.add,
                 color: Colors.deepPurple,
               ),
-              itemBuilder: (_) {
-                return [
-                  {"text": "Single selection", "value": SelectionMode.SINGLE},
-                  {"text": "Playlist", "value": SelectionMode.PLAYLIST},
-                ]
-                    .map((item) => PopupMenuItem<SelectionMode>(
-                        value: item["value"] as SelectionMode?, child: Text(item["text"] as String)))
-                    .toList();
+              onPressed: () {
+                openSingleSelectionDialog(context);
               },
-              onSelected: (selection) {
-                switch (selection) {
-                  case SelectionMode.SINGLE:
-                    openSingleSelectionDialog(context);
-                    break;
-                  case SelectionMode.PLAYLIST:
-                    openPlaylistSelectionDialog(context);
-                    break;
-                }
-              },
-            )
+            ),
           ],
         ),
         SizedBox.fromSize(
@@ -105,16 +75,9 @@ class EditAlarmMusic extends StatelessWidget {
                       ))
                   .toList();
 
-              final playlistListItems =
-                  alarm.playlistInfo.map((info) => PlaylistListItem(
-                        alarm: alarm,
-                        playlistInfo: info,
-                        key: Key(info.id.toString()),
-                      ));
-
               // 음악 목록 표시 및 재정렬 기능
               return ReorderableListView(
-                children: [...musicListItems, ...playlistListItems],
+                children: [...musicListItems],
                 onReorder: this.alarm.reorder,
               );
             },
