@@ -101,13 +101,11 @@ class AlarmScheduler {
     await showAlarmNotification(id);
   }
 
-
-
   static Future<void> showAlarmNotification(int alarmId) async {
     final alarms = await new JsonFileStorage().readList();
     list.setAlarms(alarms);
     final alarm = list.alarms.firstWhereOrNull((alarm) => alarm.id == alarmId);
-    if (alarm != null) {
+    if (alarm != null && alarm.notificationEnabled) { // Notification이 On일 때만 동작
       final vibrationPattern = Int64List.fromList([0, 1000, 500, 1000]);
       final androidPlatformChannelSpecifics = AndroidNotificationDetails(
         'alarm_notification_channel',
@@ -123,7 +121,7 @@ class AlarmScheduler {
       await flutterLocalNotificationsPlugin.show(
         alarmId,
         'Alarm',
-        alarm.name, // ObservableAlarm의 name 속성 사용
+        alarm.name,
         platformChannelSpecifics,
         payload: alarmId.toString(),
       );

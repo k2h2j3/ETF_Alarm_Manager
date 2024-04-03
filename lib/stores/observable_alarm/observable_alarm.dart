@@ -21,7 +21,8 @@ class ObservableAlarm extends ObservableAlarmBase with _$ObservableAlarm {
       required saturday,
       required sunday,
       required volume,
-      required active})
+      required active,
+      required notificationEnabled})
       : super(
           id: id,
           name: name,
@@ -36,12 +37,13 @@ class ObservableAlarm extends ObservableAlarmBase with _$ObservableAlarm {
           sunday: sunday,
           volume: volume,
           active: active,
+          notificationEnabled: notificationEnabled,
           musicIds: [],
           musicPaths: [],
         );
 
   ObservableAlarm.dayList(
-      id, name, hour, minute, volume, active, weekdays, musicIds, musicPaths)
+      id, name, hour, minute, volume, active, weekdays, musicIds, musicPaths, notificationEnabled)
       : super(
             id: id,
             name: name,
@@ -49,6 +51,7 @@ class ObservableAlarm extends ObservableAlarmBase with _$ObservableAlarm {
             minute: minute,
             volume: volume,
             active: active,
+            notificationEnabled: notificationEnabled,
             musicIds: musicIds,
             monday: weekdays[0],
             tuesday: weekdays[1],
@@ -57,7 +60,7 @@ class ObservableAlarm extends ObservableAlarmBase with _$ObservableAlarm {
             friday: weekdays[4],
             saturday: weekdays[5],
             sunday: weekdays[6],
-            musicPaths: musicPaths);
+            musicPaths: musicPaths,);
 
   factory ObservableAlarm.fromJson(Map<String, dynamic> json) =>
       _$ObservableAlarmFromJson(json);
@@ -104,6 +107,9 @@ abstract class ObservableAlarmBase with Store {
   @observable
   bool active;
 
+  @observable
+  bool notificationEnabled;
+
   /// Field holding the IDs of the playlists that were added to the alarm
   /// This is used for JSON serialization as well as retrieving the music from
   /// the playlist when the alarm goes off
@@ -141,6 +147,7 @@ abstract class ObservableAlarmBase with Store {
         required this.sunday,
         required this.volume,
         required this.active,
+        required this.notificationEnabled,
         required this.musicIds,
         required this.musicPaths});
 
@@ -198,6 +205,13 @@ abstract class ObservableAlarmBase with Store {
 
     final filteredPlaylists = playlists.where((playlist) => playlistIds.contains(playlist.id.toString())).toList();
     playlistInfo = ObservableList.of(filteredPlaylists);
+  }
+
+  @action
+  void toggleNotification() {
+    notificationEnabled = !notificationEnabled;
+    // Update observable with a new value
+    this.notificationEnabled = notificationEnabled;
   }
 
   updateMusicPaths() {

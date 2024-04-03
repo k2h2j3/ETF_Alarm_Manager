@@ -21,6 +21,7 @@ ObservableAlarm _$ObservableAlarmFromJson(Map<String, dynamic> json) =>
       sunday: json['sunday'],
       volume: json['volume'],
       active: json['active'],
+      notificationEnabled: json['notificationEnabled'],
     )
       ..playlistIds = (json['playlistIds'] as List<dynamic>)
           .map((e) => e as String)
@@ -46,6 +47,7 @@ Map<String, dynamic> _$ObservableAlarmToJson(ObservableAlarm instance) =>
       'sunday': instance.sunday,
       'volume': instance.volume,
       'active': instance.active,
+      'notificationEnabled': instance.notificationEnabled,
       'playlistIds': instance.playlistIds,
       'musicIds': instance.musicIds,
       'musicPaths': instance.musicPaths,
@@ -250,6 +252,22 @@ mixin _$ObservableAlarm on ObservableAlarmBase, Store {
     });
   }
 
+  late final _$notificationEnabledAtom =
+      Atom(name: 'ObservableAlarmBase.notificationEnabled', context: context);
+
+  @override
+  bool get notificationEnabled {
+    _$notificationEnabledAtom.reportRead();
+    return super.notificationEnabled;
+  }
+
+  @override
+  set notificationEnabled(bool value) {
+    _$notificationEnabledAtom.reportWrite(value, super.notificationEnabled, () {
+      super.notificationEnabled = value;
+    });
+  }
+
   late final _$trackInfoAtom =
       Atom(name: 'ObservableAlarmBase.trackInfo', context: context);
 
@@ -335,6 +353,17 @@ mixin _$ObservableAlarm on ObservableAlarmBase, Store {
   }
 
   @override
+  void toggleNotification() {
+    final _$actionInfo = _$ObservableAlarmBaseActionController.startAction(
+        name: 'ObservableAlarmBase.toggleNotification');
+    try {
+      return super.toggleNotification();
+    } finally {
+      _$ObservableAlarmBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 name: ${name},
@@ -349,6 +378,7 @@ saturday: ${saturday},
 sunday: ${sunday},
 volume: ${volume},
 active: ${active},
+notificationEnabled: ${notificationEnabled},
 trackInfo: ${trackInfo},
 playlistInfo: ${playlistInfo}
     ''';

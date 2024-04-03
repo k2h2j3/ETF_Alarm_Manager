@@ -70,7 +70,10 @@ class HomeScreen extends StatelessWidget {
                   // 주 7일동안의 알람 반복여부 초기에는 모두 false
                   List.filled(7, false),
                   // 알람에 연결된 음악 플레이리스트. 초기에는 빈 리스트
-                  ObservableList<String>.of([]), <String>[]);
+                  ObservableList<String>.of([]),
+                  <String>[],
+                  true,
+              );
               alarms.alarms.add(newAlarm);
               // 편집 화면으로 이동
               Navigator.push(

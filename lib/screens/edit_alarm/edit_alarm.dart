@@ -3,6 +3,7 @@ import 'package:flutter_alarm_plus/components/default_container/default_containe
 import 'package:flutter_alarm_plus/services/alarm_list_manager.dart';
 import 'package:flutter_alarm_plus/services/alarm_scheduler.dart';
 import 'package:flutter_alarm_plus/stores/observable_alarm/observable_alarm.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'components/edit_alarm_days.dart';
 import 'components/edit_alarm_head.dart';
 import 'components/edit_alarm_music.dart';
@@ -49,6 +50,16 @@ class EditAlarm extends StatelessWidget {
                     // 알람 음악
                     EditAlarmMusic(alarm: this.alarm),
                     SizedBox(height: 20),
+                    Divider(),
+                    Observer(
+                      builder: (_) => SwitchListTile(
+                        title: Text('Notification'),
+                        value: alarm.notificationEnabled,
+                        onChanged: (value) {
+                          alarm.notificationEnabled = value;
+                        },
+                      ),
+                    ),
                     // 저장 버튼 추가
                     ElevatedButton(
                       onPressed: () async {
