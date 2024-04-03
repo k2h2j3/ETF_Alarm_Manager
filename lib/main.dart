@@ -116,7 +116,7 @@ class MyApp extends StatelessWidget {
 
             MediaHandler mediaHandler = MediaHandler();
             mediaHandler.changeVolume(alarm);
-            mediaHandler.playMusic(alarm);
+            mediaHandler.playDefaultAlarmSound();
             Wakelock.enable();
 
             return AlarmScreen(alarm: alarm, mediaHandler: mediaHandler);
